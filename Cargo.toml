@@ -1,7 +1,29 @@
 [package]
 name = "genfunchash"
-version = "0.1.0"
-edition = "2024"
+version = "1.0.0"
+edition = "2021"
+authors = ["GenFuncHash Contributors"]
+description = "A command-line tool for generating hash values from function names using a custom algorithm"
+homepage = "https://github.com/yourusername/genfunchash"
+repository = "https://github.com/yourusername/genfunchash"
+documentation = "https://docs.rs/genfunchash"
+license = "MIT OR Apache-2.0"
+keywords = ["hash", "function", "cli", "generator", "c-array"]
+categories = ["command-line-utilities", "development-tools"]
+readme = "README.md"
+include = [
+    "src/**/*",
+    "doc/**/*",
+    "functions.txt",
+    "genfunchash.toml",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE*",
+]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
 anyhow = "1.0.100"
