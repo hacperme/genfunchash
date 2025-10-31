@@ -14,7 +14,7 @@ impl CArrayFormatter {
             index_counter: Arc::new(AtomicUsize::new(0)),
         }
     }
-    
+
     /// 格式化为 C 数组条目
     /// 输出格式: /*[索引]*/{0x哈希值,                             (void *)函数名},
     pub fn format_entry(&self, function_name: &str, hash: u32) -> String {
@@ -24,13 +24,13 @@ impl CArrayFormatter {
             index, hash, function_name
         )
     }
-    
+
     /// 格式化单个函数（从索引 0 开始）
     pub fn format_single(&self, function_name: &str, hash: u32) -> String {
         self.reset_index();
         self.format_entry(function_name, hash)
     }
-    
+
     /// 格式化多个函数
     pub fn format_batch(&self, entries: &[(String, u32)]) -> String {
         self.reset_index();
@@ -40,12 +40,12 @@ impl CArrayFormatter {
             .collect::<Vec<_>>()
             .join("\n")
     }
-    
+
     /// 重置索引计数器
     pub fn reset_index(&self) {
         self.index_counter.store(0, Ordering::Relaxed);
     }
-    
+
     /// 获取当前索引值
     pub fn current_index(&self) -> usize {
         self.index_counter.load(Ordering::Relaxed)
@@ -66,7 +66,10 @@ mod tests {
     fn test_single_format() {
         let formatter = CArrayFormatter::new();
         let result = formatter.format_single("func1", 0x3D1EF464);
-        assert_eq!(result, "/*[  0]*/{0x3D1EF464,                             (void *)func1},");
+        assert_eq!(
+            result,
+            "/*[  0]*/{0x3D1EF464,                             (void *)func1},"
+        );
     }
 
     #[test]
@@ -76,7 +79,7 @@ mod tests {
             ("func1".to_string(), 0x3D1EF464),
             ("func2".to_string(), 0x3D021EC4),
         ];
-        
+
         let result = formatter.format_batch(&entries);
         let expected = "/*[  0]*/{0x3D1EF464,                             (void *)func1},\n/*[  1]*/{0x3D021EC4,                             (void *)func2},";
         assert_eq!(result, expected);
@@ -85,20 +88,20 @@ mod tests {
     #[test]
     fn test_index_increment() {
         let formatter = CArrayFormatter::new();
-        
+
         formatter.format_entry("func1", 0x3D1EF464);
         formatter.format_entry("func2", 0x3D021EC4);
-        
+
         assert_eq!(formatter.current_index(), 2);
     }
 
     #[test]
     fn test_reset_index() {
         let formatter = CArrayFormatter::new();
-        
+
         formatter.format_entry("func1", 0x3D1EF464);
         assert_eq!(formatter.current_index(), 1);
-        
+
         formatter.reset_index();
         assert_eq!(formatter.current_index(), 0);
     }
