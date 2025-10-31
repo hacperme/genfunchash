@@ -1,0 +1,17 @@
+[default]
+output_format = "c-array"
+enable_cache = true
+concurrency = 8
+
+[cache]
+max_entries = 10000
+ttl_seconds = 3600
+
+[output]
+include_timestamp = true
+include_index = true
+separator = "\t"
+
+[batch]
+chunk_size = 1000
+parallel_processing = true
