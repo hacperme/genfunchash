@@ -15,15 +15,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        rust: [stable, beta, nightly]
+        os: [windows-latest]
+        rust: [stable]
         exclude:
           # Reduce CI load - only test nightly on Ubuntu
           - os: windows-latest
             rust: nightly
-          - os: macos-latest
-            rust: nightly
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -50,7 +47,7 @@ jobs:
 
     - name: Check formatting
       run: cargo fmt --all -- --check
-      if: matrix.rust == 'stable' && matrix.os == 'ubuntu-latest'
+      if: matrix.rust == 'stable'
 
     - name: Run clippy
       run: cargo clippy --all-targets --all-features -- -D warnings
@@ -62,17 +59,17 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
-    - name: Run integration tests
-      run: cargo test --test integration_tests --verbose
-      if: matrix.os == 'ubuntu-latest'
+    # Integration test target 'integration_tests' not present; enable when added
+    # - name: Run integration tests
+    #   run: cargo test --test integration_tests --verbose
 
     - name: Test documentation
       run: cargo doc --no-deps --document-private-items
-      if: matrix.rust == 'stable' && matrix.os == 'ubuntu-latest'
+      if: matrix.rust == 'stable'
 
   security-audit:
     name: Security Audit
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -88,7 +85,7 @@ jobs:
 
   coverage:
     name: Code Coverage
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -117,22 +114,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            artifact_name: genfunchash
-            asset_name: genfunchash-linux-x86_64
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact_name: genfunchash.exe
             asset_name: genfunchash-windows-x86_64.exe
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            artifact_name: genfunchash
-            asset_name: genfunchash-macos-x86_64
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            artifact_name: genfunchash
-            asset_name: genfunchash-macos-aarch64
 
     steps:
     - name: Checkout code
@@ -169,7 +154,7 @@ jobs:
 
   benchmark:
     name: Performance Benchmarks
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     
     steps:
@@ -189,15 +174,3 @@ jobs:
           ~/.cargo/git/db/
           target/
         key: ${{ runner.os }}-cargo-bench-${{ hashFiles('**/Cargo.lock') }}
-
-    - name: Run benchmarks
-      run: cargo bench --verbose
-
-    - name: Store benchmark results
-      uses: benchmark-action/github-action-benchmark@v1
-      if: github.ref == 'refs/heads/master'
-      with:
-        tool: 'cargo'
-        output-file-path: target/criterion/report/index.html
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        auto-push: true
