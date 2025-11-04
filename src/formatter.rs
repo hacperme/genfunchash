@@ -16,7 +16,7 @@ impl CArrayFormatter {
     }
 
     /// 格式化为 C 数组条目
-    /// 输出格式: /*[索引]*/{0x哈希值,                             (void *)函数名},
+    /// 输出格式: /*[\[索引\]]*/{0x哈希值,                             (void *)函数名},
     pub fn format_entry(&self, function_name: &str, hash: u32) -> String {
         let index = self.index_counter.fetch_add(1, Ordering::Relaxed);
         format!(

@@ -69,8 +69,6 @@ pub struct BatchConfig {
     pub parallel_processing: bool,
 }
 
-
-
 impl Default for DefaultConfig {
     fn default() -> Self {
         Self {
