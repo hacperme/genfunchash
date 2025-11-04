@@ -157,7 +157,7 @@ mod tests {
         writeln!(temp_file, "func1")?;
         writeln!(temp_file, "func2")?;
         writeln!(temp_file, "# 这是注释")?;
-        writeln!(temp_file, "")?; // 空行
+        writeln!(temp_file)?; // 空行
         writeln!(temp_file, "func3")?;
 
         let functions = processor.read_functions_from_file(temp_file.path())?;
